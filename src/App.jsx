@@ -57,7 +57,7 @@ function App() {
         notify('error', 'Failed to connect wallet');
       }
     } else if (isMobile()) {
-      const dappUrl = 'rajverma51.github.io/vampexai.github.io';
+      const dappUrl = 'https://vampexai.github.io/ai/';
       window.location.href = `https://metamask.app.link/dapp/${dappUrl}`;
     } else {
       notify('error', 'Please install MetaMask → https://metamask.io');
