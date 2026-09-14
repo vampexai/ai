@@ -67,8 +67,7 @@ export const VAMP_ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"con
   [{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":
   [{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pause","outputs":
   [],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"paused","outputs":
-  [{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"priceFeed","outputs":[{"internalType":"contract
-  AggregatorV3Interface","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":
+  [{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"priceFeed","outputs":[{"internalType":"contract AggregatorV3Interface","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":
   [{"internalType":"uint256","name":"liquidity","type":"uint256"},{"internalType":"uint256","name":"minToken","type":"uint256"},
   {"internalType":"uint256","name":"minETH","type":"uint256"}],"name":"removeLiquidity","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":
   [],"name":"router","outputs":[{"internalType":"contract IPancakeRouter02","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":

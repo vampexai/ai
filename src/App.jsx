@@ -28,6 +28,8 @@ import {
 import { STAKING_ADDRESS, VAMP_ADDRESS, STAKING_ABI, VAMP_ABI } from './contracts/config';
 import logo from './assets/logo.png';
 
+const BNB_MAINNET_CHAIN_ID = '0x38'; // 56 in decimal
+
 function App() {
   const [account, setAccount] = useState(null);
   const [balance, setBalance] = useState('0');
@@ -40,6 +42,7 @@ function App() {
   const [status, setStatus] = useState({ type: '', message: '' });
   const [fetchingProfile, setFetchingProfile] = useState(false);
   const [fetchError, setFetchError] = useState(null);
+  const [wrongNetwork, setWrongNetwork] = useState(false);
 
   const notify = (type, message) => {
     setStatus({ type, message });
@@ -48,11 +51,49 @@ function App() {
 
   const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
+  const checkNetwork = async () => {
+    if (!window.ethereum) return false;
+    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+    const isCorrect = chainId === BNB_MAINNET_CHAIN_ID;
+    setWrongNetwork(!isCorrect);
+    return isCorrect;
+  };
+
+  const switchToBNBMainnet = async () => {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: BNB_MAINNET_CHAIN_ID }],
+      });
+    } catch (switchError) {
+      // Chain not added in wallet — add it
+      if (switchError.code === 4902) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: BNB_MAINNET_CHAIN_ID,
+              chainName: 'BNB Smart Chain Mainnet',
+              nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
+              rpcUrls: ['https://bsc-dataseed.binance.org/'],
+              blockExplorerUrls: ['https://bscscan.com'],
+            }],
+          });
+        } catch (addError) {
+          notify('error', 'Could not add BNB Mainnet. Please add it manually.');
+        }
+      } else {
+        notify('error', 'Please switch to BNB Mainnet manually.');
+      }
+    }
+  };
+
   const connectWallet = async () => {
     if (window.ethereum) {
       try {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         setAccount(accounts[0]);
+        await checkNetwork();
       } catch (err) {
         notify('error', 'Failed to connect wallet');
       }
@@ -70,6 +111,22 @@ function App() {
     setStakes([]);
     notify('success', 'Wallet disconnected');
   };
+
+  // Listen for network changes
+  useEffect(() => {
+    if (window.ethereum) {
+      const handleChainChanged = () => {
+        checkNetwork();
+        // Reset profile data on chain change
+        setUserProfile(null);
+        setStakes([]);
+        setFetchError(null);
+        setFetchingProfile(false);
+      };
+      window.ethereum.on('chainChanged', handleChainChanged);
+      return () => window.ethereum.removeListener('chainChanged', handleChainChanged);
+    }
+  }, []);
 
   // Auto-fill referrer from URL
   useEffect(() => {
@@ -137,13 +194,13 @@ function App() {
   }, [account]);
 
   useEffect(() => {
-    if (account) {
+    if (account && !wrongNetwork) {
         setFetchingProfile(true);
         fetchData();
         const interval = setInterval(fetchData, 15000);
         return () => clearInterval(interval);
     }
-  }, [account, fetchData]);
+  }, [account, wrongNetwork, fetchData]);
 
   const handleRegister = async () => {
     if (!secretInput) return notify('error', 'Secret password is required');
@@ -553,20 +610,41 @@ function App() {
             </div>
           )}
 
-          {fetchError && (
+          {wrongNetwork && account && (
+            <div className="card animated" style={{ marginBottom: '2rem', background: 'rgba(251, 191, 36, 0.08)', border: '1px solid rgba(251,191,36,0.5)', borderLeft: '4px solid #fbbf24' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                <AlertCircle color="#fbbf24" size={28} style={{ flexShrink: 0 }} />
+                <div style={{ flex: 1 }}>
+                  <h4 style={{ color: '#fbbf24', marginBottom: '0.3rem' }}>Wrong Network Detected</h4>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                    Your wallet is connected to the wrong network. Please switch to <strong style={{ color: '#fbbf24' }}>BNB Smart Chain Mainnet</strong> to use this protocol.
+                  </p>
+                </div>
+                <button
+                  className="btn btn-primary"
+                  style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)', border: 'none', flexShrink: 0 }}
+                  onClick={switchToBNBMainnet}
+                >
+                  Switch to BNB Mainnet
+                </button>
+              </div>
+            </div>
+          )}
+
+          {!wrongNetwork && fetchError && (
             <div className="card" style={{ marginBottom: '2rem', background: 'rgba(239, 68, 68, 0.1)', borderColor: '#ef4444' }}>
               <h4 style={{ color: '#ef4444' }}>Protocol Connection Error</h4>
               <p style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>{fetchError}</p>
             </div>
           )}
 
-      {account && fetchingProfile && (
+      {account && !wrongNetwork && fetchingProfile && (
         <div className="card animated" style={{ textAlign: 'center', padding: '3rem' }}>
           <p>Syncing with Blockchain Protocol...</p>
         </div>
       )}
 
-      {account && !fetchingProfile && !userProfile?.isRegistered && (
+      {account && !wrongNetwork && !fetchingProfile && !userProfile?.isRegistered && (
         <section className="animated card" style={{ marginBottom: '3rem' }}>
           <h2 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <ShieldCheck color="#8b5cf6" />
@@ -597,7 +675,7 @@ function App() {
         </section>
       )}
 
-      {account && !fetchingProfile && userProfile?.isRegistered && (
+      {account && !wrongNetwork && !fetchingProfile && userProfile?.isRegistered && (
         <main className="dashboard-grid">
           <div className="card animated">
             <div className="stat-label">Total Balance</div>
