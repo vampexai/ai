@@ -23,7 +23,9 @@ import {
   Copy,
   ExternalLink,
   Menu,
-  X
+  X,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { STAKING_ADDRESS, VAMP_ADDRESS, STAKING_ABI, VAMP_ABI } from './contracts/config';
 import logo from './assets/logo.png';
@@ -39,6 +41,7 @@ function App() {
   const [referralInput, setReferralInput] = useState('');
   const [stakeAmount, setStakeAmount] = useState('');
   const [secretInput, setSecretInput] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [status, setStatus] = useState({ type: '', message: '' });
   const [fetchingProfile, setFetchingProfile] = useState(false);
   const [fetchError, setFetchError] = useState(null);
@@ -661,12 +664,38 @@ function App() {
             </div>
             <div className="input-group">
               <label>Secret Recovery Password (SAVE THIS!)</label>
-              <input 
-                type="password" 
-                placeholder="Enter a strong password" 
-                value={secretInput} 
-                onChange={(e) => setSecretInput(e.target.value)}
-              />
+              <div style={{ position: 'relative', width: '100%' }}>
+                <input 
+                  type={showPassword ? 'text' : 'password'} 
+                  placeholder="Enter a strong password" 
+                  value={secretInput} 
+                  onChange={(e) => setSecretInput(e.target.value)}
+                  style={{ paddingRight: '2.8rem' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--text-secondary)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '4px',
+                    borderRadius: '6px',
+                    transition: 'color 0.2s'
+                  }}
+                  title={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
           </div>
           <button className="btn btn-primary" style={{ width: '100%' }} onClick={handleRegister} disabled={loading}>
