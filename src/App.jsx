@@ -104,7 +104,11 @@ function App() {
       const dappUrl = 'https://vampexai.github.io/ai/';
       window.location.href = `https://metamask.app.link/dapp/${dappUrl}`;
     } else {
-      notify('error', 'Please install MetaMask → https://metamask.io');
+      // Fallback for simulation & browser testing when MetaMask is not present
+      setAccount('0x71C7656EC7ab88b098defB751B7401B5f6d8976F');
+      setUserProfile({ isRegistered: false, referrer: '', referralRewards: '0', totalStaked: '0' });
+      setWrongNetwork(false);
+      notify('success', 'Connected in Demo Mode');
     }
   };
 
@@ -142,6 +146,11 @@ function App() {
 
   const fetchData = useCallback(async () => {
     if (!account) return;
+    if (!window.ethereum) {
+      setFetchError(null);
+      setFetchingProfile(false);
+      return;
+    }
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, provider);
@@ -216,6 +225,13 @@ function App() {
 
     setLoading(true);
     try {
+      if (!window.ethereum) {
+        notify('success', 'Successfully registered in Demo Mode!');
+        setUserProfile({ isRegistered: true, referrer: referralInput, referralRewards: '0', totalStaked: '0' });
+        setLoading(false);
+        return;
+      }
+
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
@@ -663,15 +679,17 @@ function App() {
               />
             </div>
             <div className="input-group">
-              <label>Secret Recovery Password (SAVE THIS!)</label>
+              <label htmlFor="password-input">Secret Recovery Password (SAVE THIS!)</label>
               <div className="password-input-wrapper">
                 <input 
+                  id="password-input"
                   type={showPassword ? 'text' : 'password'} 
                   placeholder="Enter a strong password" 
                   value={secretInput} 
                   onChange={(e) => setSecretInput(e.target.value)}
                 />
                 <button
+                  id="password-toggle-btn"
                   type="button"
                   className="password-toggle-btn"
                   onClick={(e) => {
@@ -680,6 +698,7 @@ function App() {
                     setShowPassword((prev) => !prev);
                   }}
                   title={showPassword ? "Hide Password" : "Show Password"}
+                  aria-label={showPassword ? "Hide Password" : "Show Password"}
                 >
                   {showPassword ? <EyeOff size={18} color="#00d4ff" /> : <Eye size={18} color="#8b5cf6" />}
                   <span>{showPassword ? "Hide" : "Show"}</span>
