@@ -664,40 +664,20 @@ function App() {
             </div>
             <div className="input-group">
               <label>Secret Recovery Password (SAVE THIS!)</label>
-              <div style={{ position: 'relative', width: '100%' }}>
+              <div className="password-input-wrapper">
                 <input 
                   type={showPassword ? 'text' : 'password'} 
                   placeholder="Enter a strong password" 
                   value={secretInput} 
                   onChange={(e) => setSecretInput(e.target.value)}
-                  style={{ paddingRight: '6.5rem' }}
                 />
                 <button
                   type="button"
+                  className="password-toggle-btn"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     setShowPassword((prev) => !prev);
-                  }}
-                  style={{
-                    position: 'absolute',
-                    right: '10px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: showPassword ? 'rgba(0, 212, 255, 0.15)' : 'rgba(139, 92, 246, 0.18)',
-                    border: showPassword ? '1px solid rgba(0, 212, 255, 0.4)' : '1px solid rgba(139, 92, 246, 0.35)',
-                    color: showPassword ? '#00d4ff' : '#e2e8f0',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.4rem',
-                    padding: '0.45rem 0.75rem',
-                    borderRadius: '8px',
-                    fontSize: '0.8rem',
-                    fontWeight: 600,
-                    zIndex: 10,
-                    userSelect: 'none',
-                    transition: 'all 0.2s ease'
                   }}
                   title={showPassword ? "Hide Password" : "Show Password"}
                 >

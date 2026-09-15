@@ -352,6 +352,46 @@ h1, h2 {
   box-shadow: 0 0 15px rgba(255, 0, 64, 0.15);
 }
 
+/* Password Toggle Wrapper & Button */
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  padding-right: 5.5rem !important;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(139, 92, 246, 0.22);
+  border: 1px solid rgba(139, 92, 246, 0.45);
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  z-index: 10;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.password-toggle-btn:hover {
+  background: rgba(0, 212, 255, 0.25);
+  border-color: #00d4ff;
+  color: #00d4ff;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+}
+
 /* Navbar Links */
 .nav-links {
   display: flex;
