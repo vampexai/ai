@@ -670,30 +670,39 @@ function App() {
                   placeholder="Enter a strong password" 
                   value={secretInput} 
                   onChange={(e) => setSecretInput(e.target.value)}
-                  style={{ paddingRight: '2.8rem' }}
+                  style={{ paddingRight: '6.5rem' }}
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowPassword((prev) => !prev);
+                  }}
                   style={{
                     position: 'absolute',
-                    right: '12px',
+                    right: '10px',
                     top: '50%',
                     transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--text-secondary)',
+                    background: showPassword ? 'rgba(0, 212, 255, 0.15)' : 'rgba(139, 92, 246, 0.18)',
+                    border: showPassword ? '1px solid rgba(0, 212, 255, 0.4)' : '1px solid rgba(139, 92, 246, 0.35)',
+                    color: showPassword ? '#00d4ff' : '#e2e8f0',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '4px',
-                    borderRadius: '6px',
-                    transition: 'color 0.2s'
+                    gap: '0.4rem',
+                    padding: '0.45rem 0.75rem',
+                    borderRadius: '8px',
+                    fontSize: '0.8rem',
+                    fontWeight: 600,
+                    zIndex: 10,
+                    userSelect: 'none',
+                    transition: 'all 0.2s ease'
                   }}
-                  title={showPassword ? "Hide password" : "Show password"}
+                  title={showPassword ? "Hide Password" : "Show Password"}
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? <EyeOff size={18} color="#00d4ff" /> : <Eye size={18} color="#8b5cf6" />}
+                  <span>{showPassword ? "Hide" : "Show"}</span>
                 </button>
               </div>
             </div>
